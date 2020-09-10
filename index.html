@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Binary Search Tree</title>
+
+    <style>
+      .node circle {
+        fill: #fff;
+        stroke: steelblue;
+        stroke-width: 3px;
+      }
+      .textId {
+        cursor: default;
+      }
+      .node text {
+        font: 12px sans-serif;
+      }
+
+      .link {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 5px;
+      }
+
+      .container {
+        margin: 1rem;
+        padding: 1rem;
+        text-align: center;
+      }
+      .hidden {
+        stroke: rgba(0, 0, 0, 0.1);
+      }
+      .nhidden {
+        fill: rgb(255, 255, 255) !important;
+        stroke: rgb(255, 255, 255);
+      }
+      .lhidden {
+        fill: rgb(255, 255, 255) !important;
+        stroke: rgb(255, 255, 255) !important;
+        stroke-width: 0px;
+      }
+      #ce {
+        fill: rgb(255, 255, 255) !important;
+        stroke: rgb(255, 255, 255) !important;
+        stroke-width: 0px;
+      }
+    </style>
+    <script src="binaryTreeImplementation.js"></script>
+  </head>
+
+  <body>
+    <div class="container"></div>
+    <!-- load the d3.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+
+    <script>
+      function createBST(arrayData, BST) {
+        arrayData.forEach((n) => {
+          BST.insert(n);
+        });
+      }
+      var BST = new BinarySearchTree();
+
+      var numeros = [15, 25, 10, 7, 22, 23, 13, 5, 9, 27];
+      // Inserting nodes to the BinarySearchTree
+      createBST(numeros, BST);
+      /* root = 15*/
+      /* 15 , 25, 10, 7, 22, 17, 13, 5, 9, 27*/
+      var dataExample = [];
+      var root2 = BST.getRootNode();
+      var id = root2.data;
+      var parentId = null;
+      dataExample.push({ id, parentId });
+      transformData(root2, dataExample);
+
+      function myXOR(a, b) {
+        return (a || b) && !(a && b);
+      }
+      /* root = 15*/
+      /* 15 , 25, 10, 7, 22, 17, 13, 5, 9, 27*/
+      function sleep(milliseconds) {
+        const date = Date.now();
+        let currentDate = null;
+        do {
+          currentDate = Date.now();
+        } while (currentDate - date < milliseconds);
+      }
+
+      function inOrderAnimation(node, i) {
+        if (node !== null && !isNaN(node.data)) {
+          inOrderAnimation(node.left, i);
+          var circleId = "#c" + node.data + "";
+          var x = d3.select(circleId);
+          i.push(x);
+          console.log(node.data);
+          inOrderAnimation(node.right, i);
+        }
+      }
+
+      function changeColor(x) {
+        x.style("fill", "green");
+      }
+
+      function transformData(node, dataExample) {
+        var parentId, id;
+        if (node == null) return;
+        parentId = node.data;
+        if (node.left != null) {
+          id = node.left.data;
+          dataExample.push({ id, parentId });
+        }
+        if (node.right != null) {
+          id = node.right.data;
+          dataExample.push({ id, parentId });
+        }
+        transformData(node.left, dataExample);
+        transformData(node.right, dataExample);
+      }
+
+      /*var treeData = [
+        { id: 56, parentId: 62 },
+        { id: 81, parentId: 80 },
+        { id: 74, parentId: null },
+        { id: 76, parentId: 80 },
+        { id: 63, parentId: 62 },
+        { id: 80, parentId: 86 },
+        { id: 87, parentId: 86 },
+        { id: 62, parentId: 74 },
+        { id: 86, parentId: 74 },
+      ];*/
+      const idMapping = dataExample.reduce((acc, el, i) => {
+        acc[el.id] = i;
+        return acc;
+      }, {});
+
+      let root;
+      dataExample.forEach((el) => {
+        // Handle the root element
+        if (el.parentId === null) {
+          root = el;
+          return;
+        }
+        // Use our mapping to locate the parent element in our dataExample array
+        const parentEl = dataExample[idMapping[el.parentId]];
+        //console.log(parentEl);
+        // Add our current el to its parent's `children` array
+        parentEl.children = [...(parentEl.children || []), el];
+      });
+      //console.log(dataExample[0]);
+
+      // ************** Generate the tree diagram	 *****************
+      var margin = { top: 40, right: 120, bottom: 20, left: 120 },
+        width = 960 - margin.right - margin.left,
+        height = 500 - margin.top - margin.bottom;
+
+      var i = 0;
+
+      var tree = d3.layout.tree().size([height, width]);
+
+      var diagonal = d3.svg.diagonal().projection(function (d) {
+        return [d.x, d.y];
+      });
+      function handleMouseOver(d, i) {
+        var idCircle = "#c" + d.id + "";
+        if (this.id == "n-e") {
+          return;
+        }
+        d3.select(idCircle)
+          .attr({
+            r: 20 * 1.5,
+          })
+          .style("fill", "green");
+        var idText = "#t-" + d.id + "";
+
+        d3.select(idText).style("font-size", "20px");
+      }
+      function handleMouseOut(d, i) {
+        var idCircle = "#c" + d.id + "";
+        d3.select(idCircle)
+          .attr({
+            r: 20,
+          })
+          .style("fill", "black");
+        var idText = "#t-" + d.id + "";
+
+        d3.select(idText).style("font-size", "14px");
+      }
+      var svg = d3
+        .select(".container")
+        .append("svg")
+        .attr("width", width + margin.right + margin.left)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      update(root);
+
+      function update(source) {
+        // Compute the new tree layout.
+        var nodes = tree.nodes(root).reverse(),
+          links = tree.links(nodes);
+        console.log(nodes);
+
+        // Normalize for fixed-depth.
+        nodes.forEach(function (d) {
+          d.y = d.depth * 50;
+        });
+
+        // Declare the nodes…
+        var dNode = svg.selectAll("g.node").data(nodes, function (d) {
+          return d.id || (d.id = ++i);
+        });
+
+        // Enter the nodes.
+        var nodeEnter = dNode
+          .enter()
+          .append("g")
+          .attr("class", function (d) {
+            if (isNaN(d.id)) {
+              return "nhidden";
+            }
+            return "node";
+          })
+          .attr("id", function (d) {
+            return "n-" + d.id;
+          })
+          .attr("transform", function (d) {
+            return "translate(" + d.x + "," + d.y + ")";
+          })
+          .on("mouseover", handleMouseOver)
+          .on("mouseout", handleMouseOut);
+
+        nodeEnter
+          .append("circle")
+          .attr("r", 20)
+          .attr("id", function (d) {
+            return "c" + d.id;
+          })
+          .style("fill", "#000");
+
+        nodeEnter
+          .append("text")
+          .attr("y", function (d) {
+            return d.children || d._children ? 0 : 0;
+          })
+          .attr("dy", ".35em")
+          .attr("id", function (d) {
+            return "t-" + d.id;
+          })
+          .attr("class", "textId")
+          .attr("text-anchor", "middle")
+          .text(function (d) {
+            return d.id;
+          })
+          .style("fill-opacity", 1)
+          .style("fill", "white")
+          .style("font-size", "14px");
+
+        // Declare the links…
+        var link = svg.selectAll("path.link").data(links, function (d) {
+          return d.target.id;
+        });
+
+        // Enter the links.
+        link
+          .enter()
+          .insert("path", "g")
+          .attr("class", function (d) {
+            if (isNaN(d.target.id)) {
+              return "lhidden";
+            }
+            return "link";
+          })
+          .attr("d", diagonal)
+          .attr("id", function (d) {
+            return "l" + d.source.id + "-" + d.target.id;
+          });
+      }
+      function startAnimation(s) {
+        for (var i = 0; i < s.length; i++) {
+          s[i].transition()
+            .duration(500)
+            .style("fill", "green")
+            .delay(i*1000);
+        }
+      }
+      
+     // console.log(secuence);
+    </script>
+    <div class="button">
+      <button id="buttonAnimate">Animate</button>
+      <script>
+        document.getElementById("buttonAnimate").addEventListener('click', function() {
+          var secuence = [];
+          var rot = BST.getRootNode();
+
+          inOrderAnimation(rot, secuence);
+          startAnimation(secuence);
+        })
+      </script>
+    </div>
+  </body>
+</html>
