@@ -4,7 +4,16 @@
     <meta charset="utf-8" />
 
     <title>Binary Search Tree</title>
-
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
     <style>
       .node circle {
         fill: #fff;
@@ -17,6 +26,17 @@
       .node text {
         font: 12px sans-serif;
       }
+      #blocks_container {
+        text-align: center;
+      }
+      #block1,
+      #block2 {
+        display: inline;
+      }
+
+      #block1 {
+        margin-top: 10px;
+      }
 
       .link {
         fill: none;
@@ -24,11 +44,6 @@
         stroke-width: 5px;
       }
 
-      .container {
-        margin: 1rem;
-        padding: 1rem;
-        text-align: center;
-      }
       .hidden {
         stroke: rgba(0, 0, 0, 0.1);
       }
@@ -46,12 +61,23 @@
         stroke: rgb(255, 255, 255) !important;
         stroke-width: 0px;
       }
+      #buttonPostorder {
+        margin-top: 10px;
+      }
     </style>
     <script src="binaryTreeImplementation.js"></script>
   </head>
 
   <body>
-    <div class="container"></div>
+    <div id="blocks_container" class="container">
+      <div class="row">
+        <div id="block1" class="col-sm">
+          <button class="btn btn-outline-info btn-lg" id="buttonInorder">Inorder</button>
+          <button class="btn btn-outline-info btn-lg" id="buttonPostorder">Postorder</button>
+        </div>
+        <div id="block2" class="col-sm container_svg"></div>
+      </div>
+    </div>
     <!-- load the d3.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
 
@@ -88,14 +114,14 @@
         } while (currentDate - date < milliseconds);
       }
 
-      function inOrderAnimation(node, i) {
+      function inOrderAnimation(node, arrayCircles) {
         if (node !== null && !isNaN(node.data)) {
-          inOrderAnimation(node.left, i);
+          inOrderAnimation(node.left, arrayCircles);
+          // code here
           var circleId = "#c" + node.data + "";
           var x = d3.select(circleId);
-          i.push(x);
-          console.log(node.data);
-          inOrderAnimation(node.right, i);
+          arrayCircles.push(x);
+          inOrderAnimation(node.right, arrayCircles);
         }
       }
 
@@ -188,7 +214,7 @@
         d3.select(idText).style("font-size", "14px");
       }
       var svg = d3
-        .select(".container")
+        .select(".container_svg")
         .append("svg")
         .attr("width", width + margin.right + margin.left)
         .attr("height", height + margin.top + margin.bottom)
@@ -278,28 +304,50 @@
             return "l" + d.source.id + "-" + d.target.id;
           });
       }
-      function startAnimation(s) {
-        for (var i = 0; i < s.length; i++) {
-          s[i].transition()
-            .duration(500)
-            .style("fill", "green")
-            .delay(i*1000);
+      function startAnimation(s, color) {
+        for (var i = 1; i <= s.length; i++) {
+          s[i - 1]
+            .transition()
+            .duration(300)
+            .style("fill", color)
+            .delay(i * 1000);
+          s[i - 1]
+            .transition()
+            .duration(300)
+            .style("fill", "black")
+            .delay(i * 1200);
+          /*s[i-1].transition()
+            .duration(200)
+            .style("fill", "black")
+            .delay(i*1250);*/
         }
       }
-      
-     // console.log(secuence);
-    </script>
-    <div class="button">
-      <button id="buttonAnimate">Animate</button>
-      <script>
-        document.getElementById("buttonAnimate").addEventListener('click', function() {
+
+      document
+        .getElementById("buttonInorder")
+        .addEventListener("click", function () {
           var secuence = [];
           var rot = BST.getRootNode();
 
           inOrderAnimation(rot, secuence);
-          startAnimation(secuence);
-        })
-      </script>
-    </div>
+          startAnimation(secuence, "grey");
+        });
+      // console.log(secuence);
+    </script>
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+      integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+      integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>
