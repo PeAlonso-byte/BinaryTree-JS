@@ -86,51 +86,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
 
     <script>
-
       /* SET VARIABLES THAT WE GONNA NEED */
-
+      const DIV_CLASS = ".container_svg";
       var BST = new BinarySearchTree(); // INSTANCE OF BST CLASS
       var numeros = [15, 25, 10, 7, 22, 23, 13, 5, 9, 27]; // FIXED ARRAY
-      var random = []; // RANDOM ARRAY
 
       // Inserting nodes to the BinarySearchTree
-      randomBST(random); // FILLING THE ARRAY WITH RANDOM NUMBERS
-      createBST(numeros, BST); // CREATING THE BST
-  
-      /* LET'S DRAW THE BINARY SEARCH TREE WITH D3.js */
-      var dataNodes = []; // LET'S GIVE FORMAT TO OUR DATA
-      var rootNode = BST.getRootNode(); // WE GET THE ROOT NODE OF OUR TREE
 
-      var id = rootNode.data;
-      var parentId = null;
-
-      dataNodes.push({ id, parentId }); // WE NEED TO ADD MANUALLY THE ROOT ELEMENT
-      transformData(rootNode, dataNodes);
-
-      /* ------------------------ PARSING THE DATA --------------------------------------------------- */
-      const idMapping = dataNodes.reduce((acc, el, i) => {
-        acc[el.id] = i;
-        return acc;
-      }, {});
-
-      let root;
-      dataNodes.forEach((el) => {
-        // Handle the root element
-        if (el.parentId === null) {
-          root = el;
-          return;
-        }
-        // Use our mapping to locate the parent element in our dataNodes array
-        const parentEl = dataNodes[idMapping[el.parentId]];
-        // Add our current el to its parent's `children` array
-        parentEl.children = [...(parentEl.children || []), el];
-      });
       /* ------------------------------------------------------------------------------------------- */
+      let root; /* */
 
-      
       // ************** Generate the tree diagram	 *****************
-      const DIV_CLASS = ".container_svg"; 
-      drawBST(DIV_CLASS);
+      
+      //generateRandomBST(BST, DIV_CLASS);
+      generateFixedBST(BST, numeros, DIV_CLASS);
 
       /* ADD EVENT LISTENERS */
       document
@@ -140,7 +109,6 @@
           getBackToNormal(root);
           inOrderAnimation(root);
         });
-    
     </script>
     <script
       src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

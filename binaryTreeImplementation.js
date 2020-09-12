@@ -188,6 +188,74 @@ function randomBST(arrayData) {
   }
   return arrayData;
 }
+
+function generateRandomBST(BST, divClass) {
+  var random = []; // RANDOM ARRAY
+  randomBST(random); // FILLING THE ARRAY WITH RANDOM NUMBERS
+  createBST(random, BST); // CREATING THE BST
+
+  /* LET'S DRAW THE BINARY SEARCH TREE WITH D3.js */
+  var dataNodes = []; // LET'S GIVE FORMAT TO OUR DATA
+  var rootNode = BST.getRootNode(); // WE GET THE ROOT NODE OF OUR TREE
+
+  var id = rootNode.data;
+  var parentId = null;
+
+  dataNodes.push({ id, parentId }); // WE NEED TO ADD MANUALLY THE ROOT ELEMENT
+  transformData(rootNode, dataNodes);
+
+  /* ------------------------ PARSING THE DATA --------------------------------------------------- */
+  const idMapping = dataNodes.reduce((acc, el, i) => {
+    acc[el.id] = i;
+    return acc;
+  }, {});
+
+  dataNodes.forEach((el) => {
+    // Handle the root element
+    if (el.parentId === null) {
+      root = el;
+      return;
+    }
+    // Use our mapping to locate the parent element in our dataNodes array
+    const parentEl = dataNodes[idMapping[el.parentId]];
+    // Add our current el to its parent's `children` array
+    parentEl.children = [...(parentEl.children || []), el];
+  });
+  drawBST(divClass);
+}
+
+function generateFixedBST(BST, arrayNumbers ,divClass) {
+  createBST(arrayNumbers, BST); // CREATING THE BST
+
+  /* LET'S DRAW THE BINARY SEARCH TREE WITH D3.js */
+  var dataNodes = []; // LET'S GIVE FORMAT TO OUR DATA
+  var rootNode = BST.getRootNode(); // WE GET THE ROOT NODE OF OUR TREE
+
+  var id = rootNode.data;
+  var parentId = null;
+
+  dataNodes.push({ id, parentId }); // WE NEED TO ADD MANUALLY THE ROOT ELEMENT
+  transformData(rootNode, dataNodes);
+
+  /* ------------------------ PARSING THE DATA --------------------------------------------------- */
+  const idMapping = dataNodes.reduce((acc, el, i) => {
+    acc[el.id] = i;
+    return acc;
+  }, {});
+
+  dataNodes.forEach((el) => {
+    // Handle the root element
+    if (el.parentId === null) {
+      root = el;
+      return;
+    }
+    // Use our mapping to locate the parent element in our dataNodes array
+    const parentEl = dataNodes[idMapping[el.parentId]];
+    // Add our current el to its parent's `children` array
+    parentEl.children = [...(parentEl.children || []), el];
+  });
+  drawBST(divClass);
+}
 /* -------------------------------------------------------------------------------- */
 
 /* ----------------------- PARSING THE DATA TO JSON VALID FORMAT ------------------ */
@@ -229,7 +297,6 @@ const COLOR_NORMAL = "#FFE4E1";
 const STROKE_NORMAL = "gray";
 var i = 0;
 function inOrderAnimation(node) {
-  
   if (node !== null && !isNaN(node.data)) {
     var circleOrder = "#c" + node.data + "";
     var xOrder = d3.select(circleOrder);
@@ -247,19 +314,20 @@ function inOrderAnimation(node) {
     }, ANIMATION_TIME * i++);
 
     inOrderAnimation(node.right);
-    
   }
 }
 
 function getBackToNormal(node) {
-    d3.selectAll("circle").style("fill", function(d) {
-        if (!this.id.includes("e")) {
-            return COLOR_NORMAL;
-        }
-    }).style("stroke", function(d) {
-        if (!this.id.includes("e")) {
-            return STROKE_NORMAL;
-        }
+  d3.selectAll("circle")
+    .style("fill", function (d) {
+      if (!this.id.includes("e")) {
+        return COLOR_NORMAL;
+      }
+    })
+    .style("stroke", function (d) {
+      if (!this.id.includes("e")) {
+        return STROKE_NORMAL;
+      }
     });
 }
 /* -------------------------------------------------------------------------------- */
@@ -310,7 +378,12 @@ const HEIGTH_VALUE = 500;
 const DEPTH_VALUE = 55;
 
 function drawBST(div_class) {
-  var margin = { top: MARGIN_TOP, right: MARGIN_RIGHT, bottom: MARGIN_BOTTOM, left: MARGIN_LEFT },
+  var margin = {
+      top: MARGIN_TOP,
+      right: MARGIN_RIGHT,
+      bottom: MARGIN_BOTTOM,
+      left: MARGIN_LEFT,
+    },
     width = WIDTH_VALUE - margin.right - margin.left,
     height = HEIGTH_VALUE - margin.top - margin.bottom;
 
@@ -330,13 +403,13 @@ function drawBST(div_class) {
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    update(root);
+  update(root);
 
   function update(source) {
     // Compute the new tree layout.
     var nodes = tree.nodes(root).reverse(),
       links = tree.links(nodes);
-     //console.log(nodes);
+    //console.log(nodes);
 
     // Normalize for fixed-depth.
     nodes.forEach(function (d) {
@@ -424,3 +497,5 @@ function drawBST(div_class) {
 }
 
 /* --------------------------------------------------------------------------------- */
+
+
