@@ -17,7 +17,7 @@
     <style>
       .node circle {
         fill: #fff;
-        stroke: steelblue;
+        stroke: gray;
         stroke-width: 3px;
       }
       .textId {
@@ -40,7 +40,7 @@
 
       .link {
         fill: none;
-        stroke: #ccc;
+        stroke: black;
         stroke-width: 5px;
       }
 
@@ -56,7 +56,7 @@
         stroke: rgb(255, 255, 255) !important;
         stroke-width: 0px;
       }
-      #ce {
+      .ce {
         fill: rgb(255, 255, 255) !important;
         stroke: rgb(255, 255, 255) !important;
         stroke-width: 0px;
@@ -72,8 +72,12 @@
     <div id="blocks_container" class="container">
       <div class="row">
         <div id="block1" class="col-sm">
-          <button class="btn btn-outline-info btn-lg" id="buttonInorder">Inorder</button>
-          <button class="btn btn-outline-info btn-lg" id="buttonPostorder">Postorder</button>
+          <button class="btn btn-outline-info btn-lg" id="buttonInorder">
+            Inorder
+          </button>
+          <button class="btn btn-outline-info btn-lg" id="buttonPostorder">
+            Postorder
+          </button>
         </div>
         <div id="block2" class="col-sm container_svg"></div>
       </div>
@@ -82,257 +86,61 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
 
     <script>
-      function createBST(arrayData, BST) {
-        arrayData.forEach((n) => {
-          BST.insert(n);
-        });
-      }
-      var BST = new BinarySearchTree();
 
-      var numeros = [15, 25, 10, 7, 22, 23, 13, 5, 9, 27];
+      /* SET VARIABLES THAT WE GONNA NEED */
+
+      var BST = new BinarySearchTree(); // INSTANCE OF BST CLASS
+      var numeros = [15, 25, 10, 7, 22, 23, 13, 5, 9, 27]; // FIXED ARRAY
+      var random = []; // RANDOM ARRAY
+
       // Inserting nodes to the BinarySearchTree
-      createBST(numeros, BST);
-      /* root = 15*/
-      /* 15 , 25, 10, 7, 22, 17, 13, 5, 9, 27*/
-      var dataExample = [];
-      var root2 = BST.getRootNode();
-      var id = root2.data;
+      randomBST(random); // FILLING THE ARRAY WITH RANDOM NUMBERS
+      createBST(numeros, BST); // CREATING THE BST
+  
+      /* LET'S DRAW THE BINARY SEARCH TREE WITH D3.js */
+      var dataNodes = []; // LET'S GIVE FORMAT TO OUR DATA
+      var rootNode = BST.getRootNode(); // WE GET THE ROOT NODE OF OUR TREE
+
+      var id = rootNode.data;
       var parentId = null;
-      dataExample.push({ id, parentId });
-      transformData(root2, dataExample);
 
-      function myXOR(a, b) {
-        return (a || b) && !(a && b);
-      }
-      /* root = 15*/
-      /* 15 , 25, 10, 7, 22, 17, 13, 5, 9, 27*/
-      function sleep(milliseconds) {
-        const date = Date.now();
-        let currentDate = null;
-        do {
-          currentDate = Date.now();
-        } while (currentDate - date < milliseconds);
-      }
+      dataNodes.push({ id, parentId }); // WE NEED TO ADD MANUALLY THE ROOT ELEMENT
+      transformData(rootNode, dataNodes);
 
-      function inOrderAnimation(node, arrayCircles) {
-        if (node !== null && !isNaN(node.data)) {
-          inOrderAnimation(node.left, arrayCircles);
-          // code here
-          var circleId = "#c" + node.data + "";
-          var x = d3.select(circleId);
-          arrayCircles.push(x);
-          inOrderAnimation(node.right, arrayCircles);
-        }
-      }
-
-      function changeColor(x) {
-        x.style("fill", "green");
-      }
-
-      function transformData(node, dataExample) {
-        var parentId, id;
-        if (node == null) return;
-        parentId = node.data;
-        if (node.left != null) {
-          id = node.left.data;
-          dataExample.push({ id, parentId });
-        }
-        if (node.right != null) {
-          id = node.right.data;
-          dataExample.push({ id, parentId });
-        }
-        transformData(node.left, dataExample);
-        transformData(node.right, dataExample);
-      }
-
-      /*var treeData = [
-        { id: 56, parentId: 62 },
-        { id: 81, parentId: 80 },
-        { id: 74, parentId: null },
-        { id: 76, parentId: 80 },
-        { id: 63, parentId: 62 },
-        { id: 80, parentId: 86 },
-        { id: 87, parentId: 86 },
-        { id: 62, parentId: 74 },
-        { id: 86, parentId: 74 },
-      ];*/
-      const idMapping = dataExample.reduce((acc, el, i) => {
+      /* ------------------------ PARSING THE DATA --------------------------------------------------- */
+      const idMapping = dataNodes.reduce((acc, el, i) => {
         acc[el.id] = i;
         return acc;
       }, {});
 
       let root;
-      dataExample.forEach((el) => {
+      dataNodes.forEach((el) => {
         // Handle the root element
         if (el.parentId === null) {
           root = el;
           return;
         }
-        // Use our mapping to locate the parent element in our dataExample array
-        const parentEl = dataExample[idMapping[el.parentId]];
-        //console.log(parentEl);
+        // Use our mapping to locate the parent element in our dataNodes array
+        const parentEl = dataNodes[idMapping[el.parentId]];
         // Add our current el to its parent's `children` array
         parentEl.children = [...(parentEl.children || []), el];
       });
-      //console.log(dataExample[0]);
+      /* ------------------------------------------------------------------------------------------- */
 
+      
       // ************** Generate the tree diagram	 *****************
-      var margin = { top: 40, right: 120, bottom: 20, left: 120 },
-        width = 960 - margin.right - margin.left,
-        height = 500 - margin.top - margin.bottom;
+      const DIV_CLASS = ".container_svg"; 
+      drawBST(DIV_CLASS);
 
-      var i = 0;
-
-      var tree = d3.layout.tree().size([height, width]);
-
-      var diagonal = d3.svg.diagonal().projection(function (d) {
-        return [d.x, d.y];
-      });
-      function handleMouseOver(d, i) {
-        var idCircle = "#c" + d.id + "";
-        if (this.id == "n-e") {
-          return;
-        }
-        d3.select(idCircle)
-          .attr({
-            r: 20 * 1.5,
-          })
-          .style("fill", "green");
-        var idText = "#t-" + d.id + "";
-
-        d3.select(idText).style("font-size", "20px");
-      }
-      function handleMouseOut(d, i) {
-        var idCircle = "#c" + d.id + "";
-        d3.select(idCircle)
-          .attr({
-            r: 20,
-          })
-          .style("fill", "black");
-        var idText = "#t-" + d.id + "";
-
-        d3.select(idText).style("font-size", "14px");
-      }
-      var svg = d3
-        .select(".container_svg")
-        .append("svg")
-        .attr("width", width + margin.right + margin.left)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-      update(root);
-
-      function update(source) {
-        // Compute the new tree layout.
-        var nodes = tree.nodes(root).reverse(),
-          links = tree.links(nodes);
-        console.log(nodes);
-
-        // Normalize for fixed-depth.
-        nodes.forEach(function (d) {
-          d.y = d.depth * 50;
-        });
-
-        // Declare the nodes…
-        var dNode = svg.selectAll("g.node").data(nodes, function (d) {
-          return d.id || (d.id = ++i);
-        });
-
-        // Enter the nodes.
-        var nodeEnter = dNode
-          .enter()
-          .append("g")
-          .attr("class", function (d) {
-            if (isNaN(d.id)) {
-              return "nhidden";
-            }
-            return "node";
-          })
-          .attr("id", function (d) {
-            return "n-" + d.id;
-          })
-          .attr("transform", function (d) {
-            return "translate(" + d.x + "," + d.y + ")";
-          })
-          .on("mouseover", handleMouseOver)
-          .on("mouseout", handleMouseOut);
-
-        nodeEnter
-          .append("circle")
-          .attr("r", 20)
-          .attr("id", function (d) {
-            return "c" + d.id;
-          })
-          .style("fill", "#000");
-
-        nodeEnter
-          .append("text")
-          .attr("y", function (d) {
-            return d.children || d._children ? 0 : 0;
-          })
-          .attr("dy", ".35em")
-          .attr("id", function (d) {
-            return "t-" + d.id;
-          })
-          .attr("class", "textId")
-          .attr("text-anchor", "middle")
-          .text(function (d) {
-            return d.id;
-          })
-          .style("fill-opacity", 1)
-          .style("fill", "white")
-          .style("font-size", "14px");
-
-        // Declare the links…
-        var link = svg.selectAll("path.link").data(links, function (d) {
-          return d.target.id;
-        });
-
-        // Enter the links.
-        link
-          .enter()
-          .insert("path", "g")
-          .attr("class", function (d) {
-            if (isNaN(d.target.id)) {
-              return "lhidden";
-            }
-            return "link";
-          })
-          .attr("d", diagonal)
-          .attr("id", function (d) {
-            return "l" + d.source.id + "-" + d.target.id;
-          });
-      }
-      function startAnimation(s, color) {
-        for (var i = 1; i <= s.length; i++) {
-          s[i - 1]
-            .transition()
-            .duration(300)
-            .style("fill", color)
-            .delay(i * 1000);
-          s[i - 1]
-            .transition()
-            .duration(300)
-            .style("fill", "black")
-            .delay(i * 1200);
-          /*s[i-1].transition()
-            .duration(200)
-            .style("fill", "black")
-            .delay(i*1250);*/
-        }
-      }
-
+      /* ADD EVENT LISTENERS */
       document
         .getElementById("buttonInorder")
         .addEventListener("click", function () {
-          var secuence = [];
-          var rot = BST.getRootNode();
-
-          inOrderAnimation(rot, secuence);
-          startAnimation(secuence, "grey");
+          var root = BST.getRootNode();
+          getBackToNormal(root);
+          inOrderAnimation(root);
         });
-      // console.log(secuence);
+    
     </script>
     <script
       src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
