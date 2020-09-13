@@ -40,7 +40,7 @@
 
       .link {
         fill: none;
-        stroke: black;
+        stroke: gray;
         stroke-width: 5px;
       }
 
@@ -61,7 +61,7 @@
         stroke: rgb(255, 255, 255) !important;
         stroke-width: 0px;
       }
-      #buttonPostorder {
+      #buttonPostorder, #buttonClear, #buttonInorder, #buttonRandomBST {
         margin-top: 10px;
       }
     </style>
@@ -72,11 +72,20 @@
     <div id="blocks_container" class="container">
       <div class="row">
         <div id="block1" class="col-sm">
+          <button class="btn btn-outline-info btn-lg" id="buttonFixedBST">
+            Fixed BST
+          </button>
+          <button class="btn btn-outline-info btn-lg" id="buttonRandomBST">
+            Random BST
+          </button>
           <button class="btn btn-outline-info btn-lg" id="buttonInorder">
             Inorder
           </button>
           <button class="btn btn-outline-info btn-lg" id="buttonPostorder">
             Postorder
+          </button>
+          <button class="btn btn-outline-info btn-lg" id="buttonClear">
+            Clear
           </button>
         </div>
         <div id="block2" class="col-sm container_svg"></div>
@@ -94,7 +103,7 @@
       // Inserting nodes to the BinarySearchTree
 
       /* ------------------------------------------------------------------------------------------- */
-      let root; /* */
+      let root; /* Important */
 
       // ************** Generate the tree diagram	 *****************
       
@@ -105,9 +114,35 @@
       document
         .getElementById("buttonInorder")
         .addEventListener("click", function () {
+          timeInt = 0;
           var root = BST.getRootNode();
           getBackToNormal(root);
           inOrderAnimation(root);
+          console.log(timeInt);
+          
+        });
+        document
+        .getElementById("buttonClear")
+        .addEventListener("click", function () {
+          var root = BST.getRootNode();
+          getBackToNormal(root);
+        });
+        document
+        .getElementById("buttonRandomBST")
+        .addEventListener("click", function () {
+          let root;
+          BST = new BinarySearchTree();
+          generateRandomBST(BST, DIV_CLASS);
+          console.log(BST);
+        });
+
+        document
+        .getElementById("buttonFixedBST")
+        .addEventListener("click", function () {
+          let root;
+          BST = new BinarySearchTree();
+          generateFixedBST(BST, numeros, DIV_CLASS);
+          console.log(BST);
         });
     </script>
     <script

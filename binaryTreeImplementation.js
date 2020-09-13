@@ -190,8 +190,11 @@ function randomBST(arrayData) {
 }
 
 function generateRandomBST(BST, divClass) {
+  d3.select('svg').remove();
   var random = []; // RANDOM ARRAY
+  //BST = new BinarySearchTree();
   randomBST(random); // FILLING THE ARRAY WITH RANDOM NUMBERS
+  console.log(random);
   createBST(random, BST); // CREATING THE BST
 
   /* LET'S DRAW THE BINARY SEARCH TREE WITH D3.js */
@@ -225,6 +228,7 @@ function generateRandomBST(BST, divClass) {
 }
 
 function generateFixedBST(BST, arrayNumbers ,divClass) {
+  d3.select('svg').remove();
   createBST(arrayNumbers, BST); // CREATING THE BST
 
   /* LET'S DRAW THE BINARY SEARCH TREE WITH D3.js */
@@ -291,11 +295,11 @@ var treeData = [
 /* -------------------------------------------------------------------------------- */
 /* ----------------------- ANIMATED ALGORITMHS ------------------------------------ */
 const ANIMATION_TIME = 750;
-const COLOR_FILL = "green"; // when algorithms paints
-const COLOR_STROKE = "red"; // current position of algorithms
-const COLOR_NORMAL = "#FFE4E1";
+const COLOR_FILL = "yellow"; // when algorithms paints
+const COLOR_STROKE = "#c51d34"; // current position of algorithms
+const COLOR_NORMAL = "#5dc1b9";
 const STROKE_NORMAL = "gray";
-var i = 0;
+var timeInt = 0;
 function inOrderAnimation(node) {
   if (node !== null && !isNaN(node.data)) {
     var circleOrder = "#c" + node.data + "";
@@ -303,7 +307,7 @@ function inOrderAnimation(node) {
 
     setTimeout(function () {
       xOrder.transition().duration(300).style("stroke", COLOR_STROKE);
-    }, ANIMATION_TIME * i++);
+    }, ANIMATION_TIME * timeInt++);
     inOrderAnimation(node.left);
     // code here
     var circleId = "#c" + node.data + "";
@@ -311,7 +315,7 @@ function inOrderAnimation(node) {
 
     setTimeout(function () {
       x.transition().duration(150).style("fill", COLOR_FILL);
-    }, ANIMATION_TIME * i++);
+    }, ANIMATION_TIME * timeInt++);
 
     inOrderAnimation(node.right);
   }
@@ -333,8 +337,8 @@ function getBackToNormal(node) {
 /* -------------------------------------------------------------------------------- */
 
 /* ------------------------------- ANIMATE HANDLERS ------------------------------- */
-const COLOR_MOUSE_OVER = "#FFA7A6";
-const COLOR_MOUSE_OUT = "#FFE4E1";
+const COLOR_MOUSE_OVER = "yellow";
+const COLOR_MOUSE_OUT = "#5dc1b9";
 const FONT_SIZE_MOUSE_OVER = "20px";
 const FONT_SIZE_MOUSE_OUT = "14px";
 
@@ -453,7 +457,7 @@ function drawBST(div_class) {
         if (isNaN(d.id)) {
           return "white";
         }
-        return "#FFE4E1";
+        return "#5dc1b9";
       });
 
     nodeEnter
