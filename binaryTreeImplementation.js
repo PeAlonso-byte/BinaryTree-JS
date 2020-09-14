@@ -139,6 +139,22 @@ class BinarySearchTree {
       this.inorder(node.right);
     }
   }
+  postorder(node) {
+    if (node !== null) {
+      this.postorder(node.left);
+      this.postorder(node.right);
+      console.log(node.data);
+    }
+  }
+
+  preorder(node) {
+    if (node !== null) {
+      console.log(node.data);
+      this.preorder(node.left);
+      this.preorder(node.right);
+      
+    }
+  }
 
   findMinNode(node) {
     // if left of a node is null
@@ -295,11 +311,12 @@ var treeData = [
 /* -------------------------------------------------------------------------------- */
 /* ----------------------- ANIMATED ALGORITMHS ------------------------------------ */
 const ANIMATION_TIME = 750;
-const COLOR_FILL = "yellow"; // when algorithms paints
+const COLOR_FILL = "#000058"; // when algorithms paints
 const COLOR_STROKE = "#c51d34"; // current position of algorithms
 const COLOR_NORMAL = "#5dc1b9";
 const STROKE_NORMAL = "gray";
 var timeInt = 0;
+
 function inOrderAnimation(node) {
   if (node !== null && !isNaN(node.data)) {
     var circleOrder = "#c" + node.data + "";
@@ -321,6 +338,45 @@ function inOrderAnimation(node) {
   }
 }
 
+function postOrderAnimation(node) {
+  if (node !== null && !isNaN(node.data)) {
+    var circleOrder = "#c" + node.data + "";
+    var xOrder = d3.select(circleOrder);
+
+    setTimeout(function () {
+      xOrder.transition().duration(300).style("stroke", COLOR_STROKE);
+    }, ANIMATION_TIME * timeInt++);
+    postOrderAnimation(node.left);
+    postOrderAnimation(node.right);
+
+    var circleId = "#c" + node.data + "";
+    var x = d3.select(circleId);
+
+    setTimeout(function () {
+      x.transition().duration(150).style("fill", COLOR_FILL);
+    }, ANIMATION_TIME * timeInt++);
+  }
+}
+function preOrderAnimation(node) {
+  if (node !== null && !isNaN(node.data)) {
+    var circleOrder = "#c" + node.data + "";
+    var xOrder = d3.select(circleOrder);
+
+    setTimeout(function () {
+      xOrder.transition().duration(300).style("stroke", COLOR_STROKE);
+    }, ANIMATION_TIME * timeInt++);
+    var circleId = "#c" + node.data + "";
+    var x = d3.select(circleId);
+
+    setTimeout(function () {
+      x.transition().duration(150).style("fill", COLOR_FILL);
+    }, ANIMATION_TIME * timeInt++);
+    
+    preOrderAnimation(node.left);
+    preOrderAnimation(node.right);
+  }
+}
+
 function getBackToNormal(node) {
   d3.selectAll("circle")
     .style("fill", function (d) {
@@ -337,7 +393,7 @@ function getBackToNormal(node) {
 /* -------------------------------------------------------------------------------- */
 
 /* ------------------------------- ANIMATE HANDLERS ------------------------------- */
-const COLOR_MOUSE_OVER = "yellow";
+const COLOR_MOUSE_OVER = "#000058";
 const COLOR_MOUSE_OUT = "#5dc1b9";
 const FONT_SIZE_MOUSE_OVER = "20px";
 const FONT_SIZE_MOUSE_OUT = "14px";
@@ -455,7 +511,7 @@ function drawBST(div_class) {
       })
       .style("fill", function (d) {
         if (isNaN(d.id)) {
-          return "white";
+          return "#f3e9dc";
         }
         return "#5dc1b9";
       });
