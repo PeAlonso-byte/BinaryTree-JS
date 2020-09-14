@@ -312,9 +312,9 @@ var treeData = [
 /* ----------------------- ANIMATED ALGORITMHS ------------------------------------ */
 const ANIMATION_TIME = 750;
 const COLOR_FILL = "#000058"; // when algorithms paints
-const COLOR_STROKE = "#c51d34"; // current position of algorithms
-const COLOR_NORMAL = "#5dc1b9";
-const STROKE_NORMAL = "gray";
+const COLOR_STROKE = "darkorange"; // current position of algorithms
+const COLOR_NORMAL = "rgb(55, 109, 179)";
+const STROKE_NORMAL = "white";
 var timeInt = 0;
 
 function inOrderAnimation(node) {
@@ -394,7 +394,7 @@ function getBackToNormal(node) {
 
 /* ------------------------------- ANIMATE HANDLERS ------------------------------- */
 const COLOR_MOUSE_OVER = "#000058";
-const COLOR_MOUSE_OUT = "#5dc1b9";
+const COLOR_MOUSE_OUT = "rgb(55, 109, 179)";
 const FONT_SIZE_MOUSE_OVER = "20px";
 const FONT_SIZE_MOUSE_OUT = "14px";
 
@@ -513,7 +513,7 @@ function drawBST(div_class) {
         if (isNaN(d.id)) {
           return "#f3e9dc";
         }
-        return "#5dc1b9";
+        return "rgb(55, 109, 179)";
       });
 
     nodeEnter
@@ -531,7 +531,7 @@ function drawBST(div_class) {
         if (!isNaN(d.id)) return d.id;
       })
       .style("fill-opacity", 1)
-      .style("fill", "white")
+      .style("fill", "orange")
       .style("font-size", "14px");
 
     // Declare the links…

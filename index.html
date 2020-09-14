@@ -14,94 +14,102 @@
       integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
       crossorigin="anonymous"
     />
-    <style>
-      .node circle {
-        fill: #f3e9dc;
-        stroke: gray;
-        stroke-width: 3px;
-      }
-      .textId {
-        cursor: default;
-      }
-      .node text {
-        font: 12px sans-serif;
-      }
-      #blocks_container {
-        text-align: center;
-      }
-      #block1,
-      #block2 {
-        display: inline;
-      }
-      body {
-        background-color: #f3e9dc;
-      }
-      #block1 {
-        margin-top: 10px;
-      }
-
-      .link {
-        fill: none;
-        stroke: rgb(0, 56, 49);
-        stroke-width: 5px;
-      }
-
-      .hidden {
-        stroke: rgba(0, 0, 0, 0.1);
-      }
-      .nhidden {
-        fill: #f3e9dc!important;
-        stroke: #f3e9dc;
-      }
-      .lhidden {
-        fill: #f3e9dc !important;
-        stroke: #f3e9dc !important;
-        stroke-width: 0px;
-      }
-      .ce {
-        fill: #f3e9dc !important;
-        stroke: #f3e9dc !important;
-        stroke-width: 0px;
-      }
-      #buttonPostorder, #buttonClear, #buttonInorder, #buttonRandomBST, #buttonPreorder {
-        margin-top: 10px;
-      }
-    </style>
+    <link rel="stylesheet" href="main.css"/>
     <script src="binaryTreeImplementation.js"></script>
   </head>
 
   <body>
-    <div id="blocks_container" class="container">
-      <div class="row">
-        <div id="block1" class="col-sm">
-          <button class="btn btn-outline-info btn-lg" id="buttonFixedBST">
-            Fixed BST
-          </button>
-          <button class="btn btn-outline-info btn-lg" id="buttonRandomBST">
-            Random BST
-          </button>
-          <button class="btn btn-outline-info btn-lg" id="buttonInorder">
-            Inorder
-          </button>
-          <button class="btn btn-outline-info btn-lg" id="buttonPostorder">
-            Postorder
-          </button>
-          <button class="btn btn-outline-info btn-lg" id="buttonPreorder">
-            Preorder
-          </button>
-          <button class="btn btn-outline-info btn-lg" id="buttonClear">
-            Clear
-          </button>
-        </div>
-        <div id="block2" class="col-sm container_svg"></div>
+    <div id="blocks_container" class="grid-container">
+      <div class="div_tittle">
+        <p><a href="">
+          Binary Search Tree
+          Visualizator
+        </a></p>
       </div>
+      <div class="div_tittle2">
+      </div>
+      <div class="div_opciones1 col-sm">
+        <div class="row">
+          <div class="col-sm">
+            <div
+              id="btn-group1"
+              class="btn-group-vertical"
+              role="group"
+              aria-label="Basic Exameple"
+            >
+              <button
+                type="button"
+                class="btn btnCustom btn-outline-info btn-lg"
+                id="buttonFixedBST"
+              >
+                <span> Fixed.BST </span>
+              </button>
+              <button
+                type="button"
+                class="btn btnCustom btn-outline-info btn-lg"
+                id="buttonRandomBST"
+              >
+                <span>Random.BST</span>
+              </button>
+              <button
+                type="button"
+                class="btn btnCustom btn-outline-info btn-lg"
+                id="buttonClear"
+              >
+                <span>Clear</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="div_opciones2 col-sm">
+        <div class="row">
+          <div class="col-sm">
+            <div
+              id="btn-group2"
+              class="btn-group-vertical"
+              role="group"
+              aria-label="Basic Exameple"
+            >
+              <button
+                type="button"
+                class="btn btnCustom btn-outline-info btn-lg"
+                id="buttonInorder"
+              >
+                <span>Inorder</span>
+              </button>
+              <button
+                type="button"
+                class="btn btnCustom btn-outline-info btn-lg"
+                id="buttonPostorder"
+              >
+                <span>Postorder</span>
+              </button>
+              <button
+                type="button"
+                class="btn btnCustom btn-outline-info btn-lg"
+                id="buttonPreorder"
+              >
+                <span>Preorder</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="div_opciones3 col-sm">
+        
+      </div>
+      <div id="block2" class="col-sm div_arbol">
+        <div class="svg_container"></div>
+      </div>
+      <div class="footer"></div>
     </div>
     <!-- load the d3.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
 
     <script>
       /* SET VARIABLES THAT WE GONNA NEED */
-      const DIV_CLASS = ".container_svg"; // Div where we are going to draw the svg
+      const DIV_CLASS = ".svg_container"; // Div where we are going to draw the svg
       var BST = new BinarySearchTree(); // INSTANCE OF BST CLASS
       var numeros = [15, 25, 10, 7, 22, 23, 13, 5, 9, 27]; // FIXED ARRAY
 
@@ -111,7 +119,7 @@
       let root; /* Important */
 
       // ************** Generate the tree diagram	 *****************
-      
+
       //generateRandomBST(BST, DIV_CLASS);
       generateFixedBST(BST, numeros, DIV_CLASS);
 
@@ -123,42 +131,45 @@
           var root = BST.getRootNode();
           getBackToNormal(root);
           inOrderAnimation(root);
-          setTimeout(function() {
+          setTimeout(function () {
             getBackToNormal(root);
           }, 750 * timeInt++);
           //console.log(timeInt);
-          
         });
 
-        document
+      document
         .getElementById("buttonPostorder")
         .addEventListener("click", function () {
           timeInt = 0;
           var root = BST.getRootNode();
           getBackToNormal(root);
           postOrderAnimation(root);
+          setTimeout(function () {
+            getBackToNormal(root);
+          }, 750 * timeInt++);
           //console.log(timeInt);
-          
         });
 
-        document
+      document
         .getElementById("buttonPreorder")
         .addEventListener("click", function () {
           timeInt = 0;
           var root = BST.getRootNode();
           getBackToNormal(root);
           preOrderAnimation(root);
+          setTimeout(function () {
+            getBackToNormal(root);
+          }, 750 * timeInt++);
           //console.log(timeInt);
-          
         });
 
-        document
+      document
         .getElementById("buttonClear")
         .addEventListener("click", function () {
           var root = BST.getRootNode();
           getBackToNormal(root);
         });
-        document
+      document
         .getElementById("buttonRandomBST")
         .addEventListener("click", function () {
           let root;
@@ -167,7 +178,7 @@
           console.log(BST);
         });
 
-        document
+      document
         .getElementById("buttonFixedBST")
         .addEventListener("click", function () {
           let root;
@@ -177,19 +188,19 @@
         });
     </script>
     <script
-      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-      integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-      integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
-      crossorigin="anonymous"
-    ></script>
+    src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+    crossorigin="anonymous"
+  ></script>
   </body>
 </html>
