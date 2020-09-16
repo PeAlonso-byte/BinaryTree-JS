@@ -1,2 +1,2 @@
 # BinaryTree-JS
-BinaryTree visualizator. It animates some traversal algorithms
+BinaryTree visualizer. It animates some traversal algorithms
