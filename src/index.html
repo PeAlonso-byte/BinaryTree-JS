@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Binary Search Tree Visualizer</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="js/binaryTreeImplementation.js"></script>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+			<p id="main_title"><a id="main_link" href="">
+				Binary Search Tree
+				Visualizer
+			  </a></p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="jumbotron">
+            <h2>Hello, world!</h2>
+            <p>
+              This is a template for a simple and quick Binary Search Tree
+              Visualization, you can see how traversal algorithms works. You can
+              also generate your own BST or get a random one.
+            </p>
+            <p>
+              <a class="btn btn-primary btn-large" href="#">Github</a>
+            </p>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <button
+                type="button"
+                class="btn btnCustom btn-outline-info btn-lg"
+                id="buttonFixedBST"
+              >
+                <span>Fixed BST</span>
+              </button>
+            </div>
+            <div class="col-md-6">
+              <button
+                class="btn btnCustom btn-outline-info btn-lg"
+                id="buttonRandomBST"
+              >
+                <span>Random BST</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="svg_container"></div>
+        </div>
+        <div class="col-md-4">
+          <div class="row">
+            <div class="col-md-6">
+              <div id="btn-group1" class="btn-group-vertical" role="group">
+                <button
+                  type="button"
+                  class="btn btnCustom btn-outline-info btn-lg"
+                  id="buttonInorder"
+                >
+                  <span>InOrder</span>
+                </button>
+                <button
+                  type="button"
+                  class="btn btnCustom btn-outline-info btn-lg"
+                  id="buttonPostorder"
+                >
+                  <span>PostOrder</span>
+                </button>
+                <button
+                  type="button"
+                  class="btn btnCustom btn-outline-info btn-lg"
+                  id="buttonPreorder"
+                >
+                  <span>PreOrder</span>
+                </button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div id="btn-group2" class="btn-group-vertical" role="group">
+                <button
+                  type="button"
+				  class="btn btnCustom btn-outline-info btn-lg"
+				  id="btnInsertRandom"
+                >
+                  <span>Insert Random</span>
+                </button>
+                <button
+                  type="button"
+				  class="btn btnCustom btn-outline-info btn-lg"
+				  id="btnDeleteRandom"
+                >
+                  <span>Delete Random</span>
+                </button>
+                <button
+                  type="button"
+				  class="btn btnCustom btn-outline-info btn-lg"
+				  id="btnInsert"
+                >
+                  <span>Insert</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- PARAGRAPH HERE -->
+        </div>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+    <script>
+      /* SET VARIABLES THAT WE GONNA NEED */
+      const DIV_CLASS = ".svg_container"; // Div where we are going to draw the svg
+      var BST = new BinarySearchTree(); // INSTANCE OF BST CLASS
+      var numeros = [15, 25, 10, 7, 22, 23, 13, 5, 9, 27]; // FIXED ARRAY
+
+      // Inserting nodes to the BinarySearchTree
+
+      /* ------------------------------------------------------------------------------------------- */
+      let root; /* Important */
+
+      // ************** Generate the tree diagram	 *****************
+
+      //generateRandomBST(BST, DIV_CLASS);
+      generateFixedBST(BST, numeros, DIV_CLASS);
+
+      /* ADD EVENT LISTENERS */
+      document
+        .getElementById("buttonInorder")
+        .addEventListener("click", function () {
+          timeInt = 0;
+          var root = BST.getRootNode();
+          getBackToNormal(root);
+          inOrderAnimation(root);
+          setTimeout(function () {
+            getBackToNormal(root);
+          }, 750 * timeInt++);
+          //console.log(timeInt);
+        });
+
+      document
+        .getElementById("buttonPostorder")
+        .addEventListener("click", function () {
+          timeInt = 0;
+          var root = BST.getRootNode();
+          getBackToNormal(root);
+          postOrderAnimation(root);
+          setTimeout(function () {
+            getBackToNormal(root);
+          }, 750 * timeInt++);
+          //console.log(timeInt);
+        });
+
+      document
+        .getElementById("buttonPreorder")
+        .addEventListener("click", function () {
+          timeInt = 0;
+          var root = BST.getRootNode();
+          getBackToNormal(root);
+          preOrderAnimation(root);
+          setTimeout(function () {
+            getBackToNormal(root);
+          }, 750 * timeInt++);
+          //console.log(timeInt);
+        });
+
+      /*document
+        .getElementById("buttonClear")
+        .addEventListener("click", function () {
+          var root = BST.getRootNode();
+          getBackToNormal(root);
+        });*/
+      document
+        .getElementById("buttonRandomBST")
+        .addEventListener("click", function () {
+          let root;
+          BST = new BinarySearchTree();
+          generateRandomBST(BST, DIV_CLASS);
+          console.log(BST);
+        });
+
+      document
+        .getElementById("buttonFixedBST")
+        .addEventListener("click", function () {
+          let root;
+          BST = new BinarySearchTree();
+          generateFixedBST(BST, numeros, DIV_CLASS);
+          console.log(BST);
+        });
+    </script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>
