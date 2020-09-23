@@ -41,6 +41,7 @@ class BinarySearchTree {
     // data move left of the tree
     var nodeText = "e" + i;
     var HiddenNode = new Node(nodeText);
+    if (this.search(this.getRootNode(), newNode.data) == node.data) return;
     if (node === null) {
       node = newNode;
     } else if (newNode.data < node.data) {
@@ -54,7 +55,7 @@ class BinarySearchTree {
       }
       // if left is not null recur until
       // null is found
-      else this.insertNode(node.left, newNode);
+      else  return this.insertNode(node.left, newNode);
     }
 
     // if the data is more than the node
@@ -70,7 +71,7 @@ class BinarySearchTree {
       } else {
         // if right is not null recur until
         // null is found
-        this.insertNode(node.right, newNode);
+        return this.insertNode(node.right, newNode);
       }
     }
   }
@@ -152,9 +153,9 @@ class BinarySearchTree {
       console.log(node.data);
       this.preorder(node.left);
       this.preorder(node.right);
-      
     }
   }
+
 
   findMinNode(node) {
     // if left of a node is null
@@ -180,7 +181,26 @@ class BinarySearchTree {
     else if (data > node.data) return this.search(node.right, data);
     // if data is equal to the node data
     // return node
-    else return node;
+    else return node.data;
+  }
+  // search for the parent node of the given data
+  searchParent(node, dataSearch, nodeParent) {
+    if (node === null) return null;
+
+    // If current node is the required node
+    if (node.data == dataSearch) {
+      // Print its parent
+      return nodeParent;
+    } else if (node.data > dataSearch) {
+      // Recursive calls for the children
+      // of the current node
+      // Current node is now the new parent
+      nodeParent = node;
+      return this.searchParent(node.left, dataSearch, nodeParent);
+    } else {
+      nodeParent = node;
+      return this.searchParent(node.right, dataSearch, nodeParent);
+    }
   }
 }
 
@@ -188,6 +208,8 @@ class BinarySearchTree {
     arrayData --> vector [numbers].
     BST --> BST instance (new BinarySearchTree)
 */
+var dataNodes = [];
+
 function createBST(arrayData, BST) {
   arrayData.forEach((n) => {
     BST.insert(n);
@@ -204,17 +226,27 @@ function randomBST(arrayData) {
   }
   return arrayData;
 }
+var NUMBER_OF_NODES = 0;
+function getNumberNodes(node) {
+  if (node !== null) {
+    getNumberNodes(node.left);
+    if (!isNaN(node.data)) {
+      NUMBER_OF_NODES +=1
+    }
+    getNumberNodes(node.right);
+  }
+}
 
 function generateRandomBST(BST, divClass) {
-  d3.select('svg').remove();
+  d3.select("svg").remove();
   var random = []; // RANDOM ARRAY
   //BST = new BinarySearchTree();
   randomBST(random); // FILLING THE ARRAY WITH RANDOM NUMBERS
-  console.log(random);
+
   createBST(random, BST); // CREATING THE BST
 
   /* LET'S DRAW THE BINARY SEARCH TREE WITH D3.js */
-  var dataNodes = []; // LET'S GIVE FORMAT TO OUR DATA
+  dataNodes = []; // LET'S GIVE FORMAT TO OUR DATA
   var rootNode = BST.getRootNode(); // WE GET THE ROOT NODE OF OUR TREE
 
   var id = rootNode.data;
@@ -222,33 +254,15 @@ function generateRandomBST(BST, divClass) {
 
   dataNodes.push({ id, parentId }); // WE NEED TO ADD MANUALLY THE ROOT ELEMENT
   transformData(rootNode, dataNodes);
-
-  /* ------------------------ PARSING THE DATA --------------------------------------------------- */
-  const idMapping = dataNodes.reduce((acc, el, i) => {
-    acc[el.id] = i;
-    return acc;
-  }, {});
-
-  dataNodes.forEach((el) => {
-    // Handle the root element
-    if (el.parentId === null) {
-      root = el;
-      return;
-    }
-    // Use our mapping to locate the parent element in our dataNodes array
-    const parentEl = dataNodes[idMapping[el.parentId]];
-    // Add our current el to its parent's `children` array
-    parentEl.children = [...(parentEl.children || []), el];
-  });
   drawBST(divClass);
 }
 
-function generateFixedBST(BST, arrayNumbers ,divClass) {
-  d3.select('svg').remove();
+function generateFixedBST(BST, arrayNumbers, divClass) {
+  d3.select("svg").remove();
   createBST(arrayNumbers, BST); // CREATING THE BST
 
   /* LET'S DRAW THE BINARY SEARCH TREE WITH D3.js */
-  var dataNodes = []; // LET'S GIVE FORMAT TO OUR DATA
+  dataNodes = []; // LET'S GIVE FORMAT TO OUR DATA
   var rootNode = BST.getRootNode(); // WE GET THE ROOT NODE OF OUR TREE
 
   var id = rootNode.data;
@@ -257,29 +271,36 @@ function generateFixedBST(BST, arrayNumbers ,divClass) {
   dataNodes.push({ id, parentId }); // WE NEED TO ADD MANUALLY THE ROOT ELEMENT
   transformData(rootNode, dataNodes);
 
-  /* ------------------------ PARSING THE DATA --------------------------------------------------- */
-  const idMapping = dataNodes.reduce((acc, el, i) => {
-    acc[el.id] = i;
-    return acc;
-  }, {});
-
-  dataNodes.forEach((el) => {
-    // Handle the root element
-    if (el.parentId === null) {
-      root = el;
-      return;
-    }
-    // Use our mapping to locate the parent element in our dataNodes array
-    const parentEl = dataNodes[idMapping[el.parentId]];
-    // Add our current el to its parent's `children` array
-    parentEl.children = [...(parentEl.children || []), el];
-  });
   drawBST(divClass);
 }
-/* -------------------------------------------------------------------------------- */
 
+function insertNodeSVG(data, BST, divClass) {
+  var duplicated = BST.search(BST.getRootNode(), data);
+  if (duplicated != null && !isNaN(duplicated)) { // If the data is duplicated.
+   console.log("Duplicated data. " +duplicated );
+   return; 
+  }
+  d3.select("svg").remove();
+  BST.insert(data);
+  dataNodes = [];
+  var rootNode = BST.getRootNode(); // WE GET THE ROOT NODE OF OUR TREE
+  var id = rootNode.data;
+  var parentId = null;
+  var parentData = BST.searchParent(rootNode, data, null); // Parent value
+
+  dataNodes.push({id, parentId});
+  transformData(rootNode, dataNodes);
+  
+  drawBST(divClass, data);
+  timeInt = 0;
+  insertNodeAnimation(rootNode, data, parentData.data);
+  /* AHORA TENEMOS QUE RECORRER EL ARBOL CON EL SEARCH E IR MARCANDO EL NODO POR EL QUE VAMOS, CUANDO LLEGUEMOS AL NODO QUE SEA EL NUEVO SIMPLEMENTE LO PINTAMOS */
+  
+  
+/* -------------------------------------------------------------------------------- */
+}
 /* ----------------------- PARSING THE DATA TO JSON VALID FORMAT ------------------ */
-function transformData(node, dataNodes) {
+function parsingData(node, dataNodes) {
   var parentId, id;
   if (node == null) return;
   parentId = node.data;
@@ -291,8 +312,28 @@ function transformData(node, dataNodes) {
     id = node.right.data;
     dataNodes.push({ id, parentId });
   }
-  transformData(node.left, dataNodes);
-  transformData(node.right, dataNodes);
+  parsingData(node.left, dataNodes);
+  parsingData(node.right, dataNodes);
+}
+
+function transformData (node, dataNodes) {
+  parsingData(node, dataNodes);
+  const idMapping = dataNodes.reduce((acc, el, i) => {
+    acc[el.id] = i;
+    return acc;
+  }, {});
+
+  dataNodes.forEach((el) => {
+    // Handle the root element
+    if (el.parentId === null) {
+      root = el;
+      return;
+    }
+    // Use our mapping to locate the parent element in our dataNodes array
+    const parentEl = dataNodes[idMapping[el.parentId]];
+    // Add our current el to its parent's `children` array
+    parentEl.children = [...(parentEl.children || []), el];
+  });
 }
 /*
 vector[1,2,3,...] --->  {id - parent}
@@ -372,9 +413,63 @@ function preOrderAnimation(node) {
     setTimeout(function () {
       x.transition().duration(150).style("fill", COLOR_FILL);
     }, ANIMATION_TIME * timeInt++);
-    
+
     preOrderAnimation(node.left);
     preOrderAnimation(node.right);
+  }
+}
+
+function insertNodeAnimation(node, data, parent) {
+  if (node !== null && !isNaN(node.data)) {
+    var circleOrder = "#c" + node.data + "";
+    var xOrder = d3.select(circleOrder);
+
+    // PINTAMOS
+    if (node.data == data) {
+      var linkOrder = "#l"+parent+"-"+node.data;
+      var l = d3.select(linkOrder);
+      setTimeout(function () {
+        l.classed("lhidden", false);
+        l.classed("link", true);
+        l.transition().duration(150).style("stroke", COLOR_STROKE);
+      }, ANIMATION_TIME * timeInt++);
+      xOrder.style("fill-opacity", "1");
+      xOrder.style("fill", "white");
+      setTimeout(function(d) {
+        xOrder.transition().duration(300).style("stroke", COLOR_STROKE);
+      }, ANIMATION_TIME * timeInt++);
+
+      setTimeout(function(d) {
+        xOrder.transition().duration(300).style("fill", COLOR_FILL);
+      }, ANIMATION_TIME * timeInt++);
+
+      var textOrder = "#t-" + node.data+"";
+      var t = d3.select(textOrder);
+      setTimeout(function () {
+        t.text(data);
+      }, ANIMATION_TIME * timeInt++);
+      
+    } else {
+      setTimeout(function () {
+        xOrder.transition().duration(300).style("stroke", COLOR_STROKE);
+      }, ANIMATION_TIME * timeInt++);
+  
+      setTimeout(function () {
+        xOrder.transition().duration(150).style("fill", COLOR_FILL);
+      }, ANIMATION_TIME * timeInt++);
+    }
+
+    if (data < node.data) {
+      insertNodeAnimation(node.left, data, parent);
+    } else if (data > node.data) {
+      insertNodeAnimation(node.right, data, parent);
+    }
+    else {
+      setTimeout(function() {
+        var root = BST.getRootNode();
+        getBackToNormal(root);
+      }, ANIMATION_TIME * timeInt++);
+    }
   }
 }
 
@@ -390,6 +485,7 @@ function getBackToNormal(node) {
         return STROKE_NORMAL;
       }
     });
+  d3.selectAll(".link").style("stroke", "black");
 }
 /* -------------------------------------------------------------------------------- */
 
@@ -437,8 +533,11 @@ const MARGIN_LEFT = 0;
 const WIDTH_VALUE = 700;
 const HEIGTH_VALUE = 600;
 const DEPTH_VALUE = 55;
-
-function drawBST(div_class) {
+var tree;
+var diagonal;
+var svg;
+function drawBST(div_class, newNode) {
+  newNode = newNode || 0;
   var margin = {
       top: MARGIN_TOP,
       right: MARGIN_RIGHT,
@@ -450,13 +549,13 @@ function drawBST(div_class) {
 
   var i = 0;
 
-  var tree = d3.layout.tree().size([height, width]);
+  tree = d3.layout.tree().size([height, width]);
 
-  var diagonal = d3.svg.diagonal().projection(function (d) {
+  diagonal = d3.svg.diagonal().projection(function (d) {
     return [d.x, d.y];
   });
 
-  var svg = d3
+  svg = d3
     .select(div_class)
     .append("svg")
     .attr("width", width + margin.right + margin.left)
@@ -464,99 +563,107 @@ function drawBST(div_class) {
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  update(root);
+  update(root, newNode);
 
-  function update(source) {
-    // Compute the new tree layout.
-    var nodes = tree.nodes(root).reverse(),
-      links = tree.links(nodes);
-    //console.log(nodes);
+}
+function update(source, newNode) {
+  newNode = newNode || 0;
+  // Compute the new tree layout.
+  var nodes = tree.nodes(root).reverse(),
+    links = tree.links(nodes);
+  //console.log(nodes);
 
-    // Normalize for fixed-depth.
-    nodes.forEach(function (d) {
-      d.y = d.depth * DEPTH_VALUE;
+  // Normalize for fixed-depth.
+  nodes.forEach(function (d) {
+    d.y = d.depth * DEPTH_VALUE;
+  });
+
+  nodes.forEach(function separation(a, b) {
+    return a.parent == b.parent ? 1 : 3;
+  });
+  // Declare the nodes…
+  var dNode = svg.selectAll("g.node").data(nodes, function (d) {
+    return d.id;
+  });
+
+  // Enter the nodes.
+  var nodeEnter = dNode
+    .enter()
+    .append("g")
+    .attr("class", function (d) {
+      if (isNaN(d.id)) {
+        return "nhidden";
+      }
+      return "node";
+    })
+    .attr("id", function (d) {
+      return "n-" + d.id;
+    })
+    .attr("transform", function (d) {
+      return "translate(" + d.x + "," + d.y + ")";
+    })
+    .on("mouseover", handleMouseOver)
+    .on("mouseout", handleMouseOut);
+
+  nodeEnter
+    .append("circle")
+    .attr("r", 20)
+    .attr("id", function (d) {
+      return "c" + d.id;
+    })
+    .style("fill", function (d) {
+      if (isNaN(d.id)) {
+        return "#f3e9dc";
+      }
+      return "rgb(55, 109, 179)";
+    })
+    .style("fill-opacity", function(d){
+      if (isNaN(d.id) || d.id == newNode) {
+        return 0;
+      }
+      return 1;
     });
+    
+  nodeEnter
+    .append("text")
+    .attr("y", function (d) {
+      return d.children || d._children ? 0 : 0;
+    })
+    .attr("dy", ".35em")
+    .attr("id", function (d) {
+      return "t-" + d.id;
+    })
+    .attr("class", "textId")
+    .attr("text-anchor", "middle")
+    .text(function (d) {
+      if (!isNaN(d.id) && d.id != newNode) return d.id;
+    })
+    .style("fill-opacity", 1)
+    .style("fill", "orange")
+    .style("font-size", "14px");
+    
+    dNode.exit().remove();
+  // Declare the links…
+  var link = svg.selectAll("path.link").data(links, function (d) {
+    return d.target.id;
+  });
 
-    nodes.forEach(function separation(a, b) {
-      return a.parent == b.parent ? 1 : 3;
+  // Enter the links.
+  var linkEnter = link
+    .enter()
+    .insert("path", "g")
+    .attr("class", function (d) {
+      if (isNaN(d.target.id) || d.target.id == newNode) {
+        return "lhidden"; /* WE HAVE TO INSERT EMPTY NODES TO GET A BST NICE VIEW :), THEN JUST HIDDE THEM*/
+      }
+      return "link";
+    })
+    .attr("d", diagonal)
+    .attr("id", function (d) {
+      return "l" + d.source.id + "-" + d.target.id;
     });
-    // Declare the nodes…
-    var dNode = svg.selectAll("g.node").data(nodes, function (d) {
-      return d.id;
-    });
-
-    // Enter the nodes.
-    var nodeEnter = dNode
-      .enter()
-      .append("g")
-      .attr("class", function (d) {
-        if (isNaN(d.id)) {
-          return "nhidden";
-        }
-        return "node";
-      })
-      .attr("id", function (d) {
-        return "n-" + d.id;
-      })
-      .attr("transform", function (d) {
-        return "translate(" + d.x + "," + d.y + ")";
-      })
-      .on("mouseover", handleMouseOver)
-      .on("mouseout", handleMouseOut);
-
-    nodeEnter
-      .append("circle")
-      .attr("r", 20)
-      .attr("id", function (d) {
-        return "c" + d.id;
-      })
-      .style("fill", function (d) {
-        if (isNaN(d.id)) {
-          return "#f3e9dc";
-        }
-        return "rgb(55, 109, 179)";
-      });
-
-    nodeEnter
-      .append("text")
-      .attr("y", function (d) {
-        return d.children || d._children ? 0 : 0;
-      })
-      .attr("dy", ".35em")
-      .attr("id", function (d) {
-        return "t-" + d.id;
-      })
-      .attr("class", "textId")
-      .attr("text-anchor", "middle")
-      .text(function (d) {
-        if (!isNaN(d.id)) return d.id;
-      })
-      .style("fill-opacity", 1)
-      .style("fill", "orange")
-      .style("font-size", "14px");
-
-    // Declare the links…
-    var link = svg.selectAll("path.link").data(links, function (d) {
-      return d.target.id;
-    });
-
-    // Enter the links.
-    link
-      .enter()
-      .insert("path", "g")
-      .attr("class", function (d) {
-        if (isNaN(d.target.id)) {
-          return "lhidden"; /* WE HAVE TO INSERT EMPTY NODES TO GET A BST NICE VIEW :), THEN JUST HIDDE THEM*/
-        }
-        return "link";
-      })
-      .attr("d", diagonal)
-      .attr("id", function (d) {
-        return "l" + d.source.id + "-" + d.target.id;
-      });
-  }
+    link.exit().remove();
+    
 }
 
 /* --------------------------------------------------------------------------------- */
-
-

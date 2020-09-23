@@ -57,7 +57,7 @@
         <div class="col-md-4">
           <div class="svg_container"></div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" style="padding-right: 4em;">
           <div class="row">
             <div class="col-md-6">
               <div id="btn-group1" class="btn-group-vertical" role="group">
@@ -103,9 +103,9 @@
                 <button
                   type="button"
 				  class="btn btnCustom btn-outline-info btn-lg"
-				  id="btnInsert"
+				  id="buttonClear"
                 >
-                  <span>Insert</span>
+                  <span>Clear</span>
                 </button>
               </div>
             </div>
@@ -130,7 +130,8 @@
 
       //generateRandomBST(BST, DIV_CLASS);
       generateFixedBST(BST, numeros, DIV_CLASS);
-
+      console.log(dataNodes);
+      
       /* ADD EVENT LISTENERS */
       document
         .getElementById("buttonInorder")
@@ -142,9 +143,10 @@
           setTimeout(function () {
             getBackToNormal(root);
           }, 750 * timeInt++);
+          
           //console.log(timeInt);
         });
-
+        
       document
         .getElementById("buttonPostorder")
         .addEventListener("click", function () {
@@ -170,20 +172,19 @@
           }, 750 * timeInt++);
           //console.log(timeInt);
         });
-
-      /*document
+        
+      document
         .getElementById("buttonClear")
         .addEventListener("click", function () {
-          var root = BST.getRootNode();
-          getBackToNormal(root);
-        });*/
+          getBackToNormal(root);   
+        });
       document
         .getElementById("buttonRandomBST")
         .addEventListener("click", function () {
           let root;
           BST = new BinarySearchTree();
           generateRandomBST(BST, DIV_CLASS);
-          console.log(BST);
+          //console.log(BST);
         });
 
       document
@@ -192,7 +193,23 @@
           let root;
           BST = new BinarySearchTree();
           generateFixedBST(BST, numeros, DIV_CLASS);
-          console.log(BST);
+          //console.log(BST);
+        });
+        
+        document
+        .getElementById("btnInsertRandom")
+        .addEventListener("click", function () {
+          var root = BST.getRootNode();
+          //getBackToNormal(root);
+          NUMBER_OF_NODES = 0;
+          getNumberNodes(root);
+          if (NUMBER_OF_NODES < 20) {
+            var n_random = Math.floor(Math.random() * 60) + 1;
+            alert("El numero a insertar es : " + n_random);
+            insertNodeSVG(n_random, BST, DIV_CLASS);
+          } else {
+            console.log("numero maximo de nodos alcanzado");
+          }
         });
     </script>
     <script src="js/jquery.min.js"></script>
