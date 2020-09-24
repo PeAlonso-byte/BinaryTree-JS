@@ -196,17 +196,18 @@
     }
   }
 
-  @media only screen and (max-width: 1470px) and (min-width: 500px) {
+  @media only screen and (max-width: 1470px) {
     /* Design for desktop */
     button {
-      display: inline;
+      display: block;
     }
     .svg_container {
       padding-top: 10%;
       width: 100%;
+      display: block;
     }
 
     #btn-group1, #btn-group2 {
-      display: inline;
+      display: block;
     }
 }

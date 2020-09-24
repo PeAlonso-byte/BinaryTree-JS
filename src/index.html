@@ -130,7 +130,22 @@
 
       //generateRandomBST(BST, DIV_CLASS);
       generateFixedBST(BST, numeros, DIV_CLASS);
+
+      /* PRUEBA BORRADO */
+      
+      d3.select("svg").remove();
+      var rootN = BST.getRootNode();
       console.log(dataNodes);
+      var x = BST.removeNode( rootN, 15);
+      rootN = BST.getRootNode();
+      dataNodes = [];
+      var id = rootN.data;
+      var parentId = null;
+      dataNodes.push({id, parentId});
+      transformData(rootN, dataNodes);
+      drawBST(DIV_CLASS);
+
+      /* PRUEBA BORRADO */
       
       /* ADD EVENT LISTENERS */
       document
@@ -201,6 +216,7 @@
         .addEventListener("click", function () {
           var root = BST.getRootNode();
           //getBackToNormal(root);
+          timeint = 0;
           NUMBER_OF_NODES = 0;
           getNumberNodes(root);
           if (NUMBER_OF_NODES < 20) {

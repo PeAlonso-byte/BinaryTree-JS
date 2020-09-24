@@ -109,7 +109,9 @@ class BinarySearchTree {
     else {
       // deleting node with no children
       if (node.left === null && node.right === null) {
-        node = null;
+        var nodeText = "e" + (Math.floor(Math.random() * 30) + 1);
+        var HiddenNode = new Node(nodeText);
+        node = HiddenNode;
         return node;
       }
 
@@ -160,7 +162,7 @@ class BinarySearchTree {
   findMinNode(node) {
     // if left of a node is null
     // then it must be minimum node
-    if (node.left === null) return node;
+    if (node.left === null || isNaN(node.left.data)) return node;
     else return this.findMinNode(node.left);
   }
 
@@ -286,7 +288,7 @@ function insertNodeSVG(data, BST, divClass) {
   var rootNode = BST.getRootNode(); // WE GET THE ROOT NODE OF OUR TREE
   var id = rootNode.data;
   var parentId = null;
-  var parentData = BST.searchParent(rootNode, data, null); // Parent value
+  var parentData = BST.searchParent(rootNode, data, null); // Parent node
 
   dataNodes.push({id, parentId});
   transformData(rootNode, dataNodes);
@@ -294,7 +296,6 @@ function insertNodeSVG(data, BST, divClass) {
   drawBST(divClass, data);
   timeInt = 0;
   insertNodeAnimation(rootNode, data, parentData.data);
-  /* AHORA TENEMOS QUE RECORRER EL ARBOL CON EL SEARCH E IR MARCANDO EL NODO POR EL QUE VAMOS, CUANDO LLEGUEMOS AL NODO QUE SEA EL NUEVO SIMPLEMENTE LO PINTAMOS */
   
   
 /* -------------------------------------------------------------------------------- */
@@ -318,6 +319,7 @@ function parsingData(node, dataNodes) {
 
 function transformData (node, dataNodes) {
   parsingData(node, dataNodes);
+  console.log(dataNodes);
   const idMapping = dataNodes.reduce((acc, el, i) => {
     acc[el.id] = i;
     return acc;
