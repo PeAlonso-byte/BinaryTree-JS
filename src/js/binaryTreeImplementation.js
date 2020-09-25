@@ -55,7 +55,7 @@ class BinarySearchTree {
       }
       // if left is not null recur until
       // null is found
-      else  return this.insertNode(node.left, newNode);
+      else return this.insertNode(node.left, newNode);
     }
 
     // if the data is more than the node
@@ -89,6 +89,7 @@ class BinarySearchTree {
   removeNode(node, key) {
     // if the root is null then tree is
     // empty
+
     if (node === null) return null;
     // if data to be delete is less than
     // roots data then move to left subtree
@@ -157,7 +158,6 @@ class BinarySearchTree {
       this.preorder(node.right);
     }
   }
-
 
   findMinNode(node) {
     // if left of a node is null
@@ -233,7 +233,7 @@ function getNumberNodes(node) {
   if (node !== null) {
     getNumberNodes(node.left);
     if (!isNaN(node.data)) {
-      NUMBER_OF_NODES +=1
+      NUMBER_OF_NODES += 1;
     }
     getNumberNodes(node.right);
   }
@@ -278,9 +278,10 @@ function generateFixedBST(BST, arrayNumbers, divClass) {
 
 function insertNodeSVG(data, BST, divClass) {
   var duplicated = BST.search(BST.getRootNode(), data);
-  if (duplicated != null && !isNaN(duplicated)) { // If the data is duplicated.
-   console.log("Duplicated data. " +duplicated );
-   return; 
+  if (duplicated != null && !isNaN(duplicated)) {
+    // If the data is duplicated.
+    console.log("Duplicated data. " + duplicated);
+    return;
   }
   d3.select("svg").remove();
   BST.insert(data);
@@ -290,15 +291,32 @@ function insertNodeSVG(data, BST, divClass) {
   var parentId = null;
   var parentData = BST.searchParent(rootNode, data, null); // Parent node
 
-  dataNodes.push({id, parentId});
+  dataNodes.push({ id, parentId });
   transformData(rootNode, dataNodes);
-  
+
   drawBST(divClass, data);
   timeInt = 0;
   insertNodeAnimation(rootNode, data, parentData.data);
-  
-  
-/* -------------------------------------------------------------------------------- */
+
+  /* -------------------------------------------------------------------------------- */
+}
+
+function removeNodeSVG(data, BST, divClass) {
+  timeInt = 0;
+  removeNodeAnimation(BST.getRootNode(), data, BST);
+  setTimeout(function () {
+    BST.removeNode(BST.getRootNode(), data);
+    dataNodes = [];
+    var rootNode = BST.getRootNode(); // WE GET THE ROOT NODE OF OUR TREE
+    var id = rootNode.data;
+    var parentId = null;
+
+    dataNodes.push({ id, parentId });
+    transformData(rootNode, dataNodes);
+
+    d3.select("svg").remove();
+    drawBST(divClass);
+  }, ANIMATION_TIME * timeInt++);
 }
 /* ----------------------- PARSING THE DATA TO JSON VALID FORMAT ------------------ */
 function parsingData(node, dataNodes) {
@@ -317,7 +335,7 @@ function parsingData(node, dataNodes) {
   parsingData(node.right, dataNodes);
 }
 
-function transformData (node, dataNodes) {
+function transformData(node, dataNodes) {
   parsingData(node, dataNodes);
   console.log(dataNodes);
   const idMapping = dataNodes.reduce((acc, el, i) => {
@@ -428,7 +446,7 @@ function insertNodeAnimation(node, data, parent) {
 
     // PINTAMOS
     if (node.data == data) {
-      var linkOrder = "#l"+parent+"-"+node.data;
+      var linkOrder = "#l" + parent + "-" + node.data;
       var l = d3.select(linkOrder);
       setTimeout(function () {
         l.classed("lhidden", false);
@@ -437,25 +455,24 @@ function insertNodeAnimation(node, data, parent) {
       }, ANIMATION_TIME * timeInt++);
       xOrder.style("fill-opacity", "1");
       xOrder.style("fill", "white");
-      setTimeout(function(d) {
+      setTimeout(function (d) {
         xOrder.transition().duration(300).style("stroke", COLOR_STROKE);
       }, ANIMATION_TIME * timeInt++);
 
-      setTimeout(function(d) {
+      setTimeout(function (d) {
         xOrder.transition().duration(300).style("fill", COLOR_FILL);
       }, ANIMATION_TIME * timeInt++);
 
-      var textOrder = "#t-" + node.data+"";
+      var textOrder = "#t-" + node.data + "";
       var t = d3.select(textOrder);
       setTimeout(function () {
         t.text(data);
       }, ANIMATION_TIME * timeInt++);
-      
     } else {
       setTimeout(function () {
         xOrder.transition().duration(300).style("stroke", COLOR_STROKE);
       }, ANIMATION_TIME * timeInt++);
-  
+
       setTimeout(function () {
         xOrder.transition().duration(150).style("fill", COLOR_FILL);
       }, ANIMATION_TIME * timeInt++);
@@ -465,13 +482,218 @@ function insertNodeAnimation(node, data, parent) {
       insertNodeAnimation(node.left, data, parent);
     } else if (data > node.data) {
       insertNodeAnimation(node.right, data, parent);
-    }
-    else {
-      setTimeout(function() {
+    } else {
+      setTimeout(function () {
         var root = BST.getRootNode();
         getBackToNormal(root);
       }, ANIMATION_TIME * timeInt++);
     }
+  }
+}
+
+function removeNodeAnimation(node, data, BST, nodeDelete, nodeMin) {
+  nodeDelete = nodeDelete || null;
+  nodeMin = nodeMin || null;
+
+  if (node === null) return null;
+  // if data to be delete is less than
+  // roots data then move to left subtree
+  if (node !== null && !isNaN(node.data)) {
+    var nodeText = "#c" + node.data + "";
+    var nodeEdit = d3.select(nodeText);
+
+    setTimeout(function () {
+      if (node.data == data) {
+        nodeEdit.transition().duration(300).style("stroke", "red");
+        nodeEdit
+          .transition()
+          .duration(300)
+          .delay(300)
+          .style("fill", COLOR_FILL);
+      } else {
+        nodeEdit.transition().duration(300).style("stroke", COLOR_STROKE);
+      }
+    }, ANIMATION_TIME * timeInt++);
+  }
+  if (data < node.data) {
+    node.left = removeNodeAnimation(node.left, data, BST);
+    return node;
+  }
+
+  // if data to be delete is greater than
+  // roots data then move to right subtree
+  else if (data > node.data) {
+    node.right = removeNodeAnimation(node.right, data, BST);
+    return node;
+  }
+
+  // if data is similar to the root's data
+  // then delete this node
+  else {
+    // deleting node with no children
+    if (node.left === null && node.right === null) {
+      var parent = BST.searchParent(BST.getRootNode(), data);
+      var linkDelete = "#l" + parent.data + "-" + node.data + "";
+      var linkEdit = d3.select(linkDelete);
+      var textDelete = "#t-" + node.data;
+      var textEdit = d3.select(textDelete);
+      /* MARCAMOS EL NODO A BORRAR */
+
+      /* HACEMOS LA ANIMACION DE BORRAR */
+      setTimeout(function () {
+        nodeEdit.transition().duration(300).style("stroke", STROKE_NORMAL);
+        nodeEdit
+          .transition()
+          .duration(300)
+          .delay(300)
+          .style("fill", STROKE_NORMAL);
+        textEdit.transition().duration(300).text("");
+        linkEdit.transition().duration(300).style("stroke", STROKE_NORMAL);
+      }, ANIMATION_TIME * timeInt++);
+      return node;
+    }
+
+    // deleting node with one children
+    if (node.left === null || isNaN(node.left.data)) {
+      //node = node.right;
+
+      var nodeRigthText = "#c" + node.right.data;
+
+      var linkDelete = "#l" + node.data + "-" + node.right.data;
+      var textDelete = "#t-" + node.data;
+      var textRightDelete = "#t-" + node.right.data;
+
+      var nodeR = d3.select(nodeRigthText);
+      var linkEdit = d3.select(linkDelete);
+      var textP = d3.select(textDelete);
+      var textR = d3.select(textRightDelete);
+      setTimeout(function () {
+        nodeR.transition().duration(300).style("stroke", "red");
+      }, ANIMATION_TIME * timeInt++);
+      setTimeout(function () {
+        nodeR.transition().duration(300).style("fill", COLOR_FILL);
+      }, ANIMATION_TIME * timeInt++);
+      setTimeout(function () {
+        textP.transition().duration(300).text("");
+        textR.transition().duration(300).text("");
+      }, ANIMATION_TIME * timeInt++);
+      setTimeout(function () {
+        textP.transition().duration(300).text(node.right.data);
+        textR.transition().duration(300).text(node.data);
+      }, ANIMATION_TIME * timeInt++);
+
+      setTimeout(function () {
+        nodeR.transition().duration(300).style("stroke", STROKE_NORMAL);
+        nodeR
+          .transition()
+          .duration(300)
+          .delay(350)
+          .style("fill", STROKE_NORMAL);
+        textR.transition().duration(300).text("");
+        linkEdit.transition().duration(300).style("stroke", STROKE_NORMAL);
+      }, ANIMATION_TIME * timeInt++);
+      return node;
+    } else if (node.right === null || isNaN(node.right.data)) {
+      //node = node.left;
+      var nodeLeftText = "#c" + node.left.data;
+
+      var linkDelete = "#l" + node.data + "-" + node.left.data;
+      var textDelete = "#t-" + node.data;
+      var textLeftDelete = "#t-" + node.left.data;
+
+      var nodeL = d3.select(nodeLeftText);
+      var linkEdit = d3.select(linkDelete);
+      var textP = d3.select(textDelete);
+      var textL = d3.select(textLeftDelete);
+      setTimeout(function () {
+        nodeL.transition().duration(300).style("stroke", "red");
+      }, ANIMATION_TIME * timeInt++);
+      setTimeout(function () {
+        nodeL.transition().duration(300).style("fill", COLOR_FILL);
+      }, ANIMATION_TIME * timeInt++);
+      setTimeout(function () {
+        textP.transition().duration(300).text("");
+        textL.transition().duration(300).text("");
+      }, ANIMATION_TIME * timeInt++);
+      setTimeout(function () {
+        textP.transition().duration(300).text(node.left.data);
+        textL.transition().duration(300).text(node.data);
+      }, ANIMATION_TIME * timeInt++);
+
+      setTimeout(function () {
+        nodeL.transition().duration(300).style("stroke", STROKE_NORMAL);
+        nodeL
+          .transition()
+          .duration(300)
+          .delay(350)
+          .style("fill", STROKE_NORMAL);
+        textL.transition().duration(300).text("");
+        linkEdit.transition().duration(300).style("stroke", STROKE_NORMAL);
+      }, ANIMATION_TIME * timeInt++);
+    }
+
+    // Deleting node with two children
+    // minumum node of the rigt subtree
+    // is stored in aux
+    var aux = findMinNodeAnimation(node.right);
+    //node.data = aux.data;
+    var nodeAux = "#c" + aux.data;
+    var nodeAuxEdit = d3.select(nodeAux);
+    var parent = BST.searchParent(BST.getRootNode(), aux.data);
+    var textN = "#t-" + node.data;
+    var textAux = "#t-" + aux.data;
+
+    var textNode = d3.select(textN);
+    var textNodeAux = d3.select(textAux);
+
+    var linkText = "#l" + parent.data + "-" + aux.data;
+    var linkEdit = d3.select(linkText);
+
+    setTimeout(function () {
+      textNode.transition().duration(300).text("");
+      textNodeAux.transition().duration(300).text("");
+    }, ANIMATION_TIME * timeInt++);
+
+    setTimeout(function () {
+      textNode.transition().duration(300).text(aux.data);
+      textNodeAux.transition().duration(300).text(node.data);
+    }, ANIMATION_TIME * timeInt++);
+
+    setTimeout(function () {
+      nodeAuxEdit.transition().duration(300).style("stroke", STROKE_NORMAL);
+      nodeAuxEdit
+        .transition()
+        .duration(300)
+        .delay(300)
+        .style("fill", STROKE_NORMAL);
+      nodeAuxEdit.transition().duration(300).text("");
+      if (aux.right === null || isNaN(aux.right.data)) {
+        linkEdit.transition().duration(300).style("stroke", STROKE_NORMAL);
+      }
+    }, ANIMATION_TIME * timeInt++);
+    node.right = removeNodeAnimation(node.right, aux.data, BST);
+
+    return node;
+  }
+}
+
+function findMinNodeAnimation(node) {
+  if (node.left === null || isNaN(node.left.data)) {
+    var nodeText = "#c" + node.data;
+    var nodeEdit = d3.select(nodeText);
+
+    setTimeout(function () {
+      nodeEdit.transition().duration(300).style("stroke", "red");
+      nodeEdit.transition().duration(300).delay(350).style("fill", COLOR_FILL);
+    }, ANIMATION_TIME * timeInt++);
+    return node;
+  } else {
+    var nodeText = "#c" + node.data;
+    var nodeEdit = d3.select(nodeText);
+    setTimeout(function () {
+      nodeEdit.transition().duration(300).style("stroke", COLOR_STROKE);
+    }, ANIMATION_TIME * timeInt++);
+    return findMinNodeAnimation(node.left);
   }
 }
 
@@ -566,7 +788,6 @@ function drawBST(div_class, newNode) {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   update(root, newNode);
-
 }
 function update(source, newNode) {
   newNode = newNode || 0;
@@ -619,13 +840,13 @@ function update(source, newNode) {
       }
       return "rgb(55, 109, 179)";
     })
-    .style("fill-opacity", function(d){
+    .style("fill-opacity", function (d) {
       if (isNaN(d.id) || d.id == newNode) {
         return 0;
       }
       return 1;
     });
-    
+
   nodeEnter
     .append("text")
     .attr("y", function (d) {
@@ -643,8 +864,8 @@ function update(source, newNode) {
     .style("fill-opacity", 1)
     .style("fill", "orange")
     .style("font-size", "14px");
-    
-    dNode.exit().remove();
+
+  dNode.exit().remove();
   // Declare the links…
   var link = svg.selectAll("path.link").data(links, function (d) {
     return d.target.id;
@@ -664,8 +885,7 @@ function update(source, newNode) {
     .attr("id", function (d) {
       return "l" + d.source.id + "-" + d.target.id;
     });
-    link.exit().remove();
-    
+  link.exit().remove();
 }
 
 /* --------------------------------------------------------------------------------- */

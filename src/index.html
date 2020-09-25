@@ -133,6 +133,7 @@
 
       /* PRUEBA BORRADO */
       
+      /*
       d3.select("svg").remove();
       var rootN = BST.getRootNode();
       console.log(dataNodes);
@@ -144,7 +145,7 @@
       dataNodes.push({id, parentId});
       transformData(rootN, dataNodes);
       drawBST(DIV_CLASS);
-
+      */
       /* PRUEBA BORRADO */
       
       /* ADD EVENT LISTENERS */
@@ -209,6 +210,12 @@
           BST = new BinarySearchTree();
           generateFixedBST(BST, numeros, DIV_CLASS);
           //console.log(BST);
+        });
+        document
+        .getElementById("btnDeleteRandom")
+        .addEventListener("click", function() {
+          var root = BST.getRootNode();
+          removeNodeSVG (15, BST, DIV_CLASS);
         });
         
         document

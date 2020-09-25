@@ -53,6 +53,9 @@
    
   }
 
+  .invisible {
+    fill-opacity: 0 !important;
+  }
   #btn-group1 {
     float: right;
   }
