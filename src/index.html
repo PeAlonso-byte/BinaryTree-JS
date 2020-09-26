@@ -119,7 +119,7 @@
       /* SET VARIABLES THAT WE GONNA NEED */
       const DIV_CLASS = ".svg_container"; // Div where we are going to draw the svg
       var BST = new BinarySearchTree(); // INSTANCE OF BST CLASS
-      var numeros = [15, 25, 10, 7, 22, 23, 13, 5, 9, 27]; // FIXED ARRAY
+      var numeros = [15, 25, 10, 7, 22, 23, 13, 9, 27]; // FIXED ARRAY
 
       // Inserting nodes to the BinarySearchTree
 
@@ -131,22 +131,6 @@
       //generateRandomBST(BST, DIV_CLASS);
       generateFixedBST(BST, numeros, DIV_CLASS);
 
-      /* PRUEBA BORRADO */
-      
-      /*
-      d3.select("svg").remove();
-      var rootN = BST.getRootNode();
-      console.log(dataNodes);
-      var x = BST.removeNode( rootN, 15);
-      rootN = BST.getRootNode();
-      dataNodes = [];
-      var id = rootN.data;
-      var parentId = null;
-      dataNodes.push({id, parentId});
-      transformData(rootN, dataNodes);
-      drawBST(DIV_CLASS);
-      */
-      /* PRUEBA BORRADO */
       
       /* ADD EVENT LISTENERS */
       document
@@ -215,6 +199,7 @@
         .getElementById("btnDeleteRandom")
         .addEventListener("click", function() {
           var root = BST.getRootNode();
+          alert("El numero a borrar es: 15");
           removeNodeSVG (15, BST, DIV_CLASS);
         });
         

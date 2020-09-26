@@ -64,7 +64,7 @@ class BinarySearchTree {
       // if right is null insert node here
       if (node.right === null || isNaN(node.right.data)) {
         if (node.left === null) {
-          node.left = HiddenNode;
+          node.left = HiddenNode; // Insert empty nodes so bst looks visually good
           i++;
         }
         node.right = newNode;
@@ -87,8 +87,6 @@ class BinarySearchTree {
   // it recur over the tree to find the
   // data and removes it
   removeNode(node, key) {
-    // if the root is null then tree is
-    // empty
 
     if (node === null) return null;
     // if data to be delete is less than
@@ -98,19 +96,19 @@ class BinarySearchTree {
       return node;
     }
 
-    // if data to be delete is greater than
-    // roots data then move to right subtree
+    // if data is greater than
+    // root data then move to right subtree
     else if (key > node.data) {
       node.right = this.removeNode(node.right, key);
       return node;
     }
 
-    // if data is similar to the root's data
+    // if data == root's data
     // then delete this node
     else {
       // deleting node with no children
       if (node.left === null && node.right === null) {
-        var nodeText = "e" + (Math.floor(Math.random() * 30) + 1);
+        var nodeText = "e" + (Math.floor(Math.random() * 30) + 1); // we dont delete the node, just make it invisible otherwise bst breaks visually.
         var HiddenNode = new Node(nodeText);
         node = HiddenNode;
         return node;
@@ -294,16 +292,15 @@ function insertNodeSVG(data, BST, divClass) {
   dataNodes.push({ id, parentId });
   transformData(rootNode, dataNodes);
 
-  drawBST(divClass, data);
+  drawBST(divClass, data); // we draw the bst with the new node invisible, the we animated to make it visible.
   timeInt = 0;
   insertNodeAnimation(rootNode, data, parentData.data);
 
-  /* -------------------------------------------------------------------------------- */
 }
 
 function removeNodeSVG(data, BST, divClass) {
   timeInt = 0;
-  removeNodeAnimation(BST.getRootNode(), data, BST);
+  removeNodeAnimation(BST.getRootNode(), data, BST);// we animated and then we draw the bst without the node.
   setTimeout(function () {
     BST.removeNode(BST.getRootNode(), data);
     dataNodes = [];
@@ -319,6 +316,7 @@ function removeNodeSVG(data, BST, divClass) {
   }, ANIMATION_TIME * timeInt++);
 }
 /* ----------------------- PARSING THE DATA TO JSON VALID FORMAT ------------------ */
+/* We convert our number array into a {id, parentId} array */ 
 function parsingData(node, dataNodes) {
   var parentId, id;
   if (node == null) return;
@@ -376,6 +374,8 @@ const COLOR_FILL = "#000058"; // when algorithms paints
 const COLOR_STROKE = "darkorange"; // current position of algorithms
 const COLOR_NORMAL = "rgb(55, 109, 179)";
 const STROKE_NORMAL = "white";
+const STROKE_DELETE = "red";
+const COLOR_LINK = "black";
 var timeInt = 0;
 
 function inOrderAnimation(node) {
@@ -504,7 +504,7 @@ function removeNodeAnimation(node, data, BST, nodeDelete, nodeMin) {
 
     setTimeout(function () {
       if (node.data == data) {
-        nodeEdit.transition().duration(300).style("stroke", "red");
+        nodeEdit.transition().duration(300).style("stroke", STROKE_DELETE);
         nodeEdit
           .transition()
           .duration(300)
@@ -567,19 +567,23 @@ function removeNodeAnimation(node, data, BST, nodeDelete, nodeMin) {
       var linkEdit = d3.select(linkDelete);
       var textP = d3.select(textDelete);
       var textR = d3.select(textRightDelete);
+      var t1, t2;
+
       setTimeout(function () {
-        nodeR.transition().duration(300).style("stroke", "red");
+        nodeR.transition().duration(300).style("stroke", STROKE_DELETE);
       }, ANIMATION_TIME * timeInt++);
       setTimeout(function () {
         nodeR.transition().duration(300).style("fill", COLOR_FILL);
       }, ANIMATION_TIME * timeInt++);
       setTimeout(function () {
+        t1 = textP.text();
+        t2 = textR.text();
         textP.transition().duration(300).text("");
         textR.transition().duration(300).text("");
       }, ANIMATION_TIME * timeInt++);
       setTimeout(function () {
-        textP.transition().duration(300).text(node.right.data);
-        textR.transition().duration(300).text(node.data);
+        textP.transition().duration(300).text(t2);
+        textR.transition().duration(300).text(t1);
       }, ANIMATION_TIME * timeInt++);
 
       setTimeout(function () {
@@ -605,19 +609,22 @@ function removeNodeAnimation(node, data, BST, nodeDelete, nodeMin) {
       var linkEdit = d3.select(linkDelete);
       var textP = d3.select(textDelete);
       var textL = d3.select(textLeftDelete);
+      var t1, t2;
       setTimeout(function () {
-        nodeL.transition().duration(300).style("stroke", "red");
+        nodeL.transition().duration(300).style("stroke", STROKE_DELETE);
       }, ANIMATION_TIME * timeInt++);
       setTimeout(function () {
         nodeL.transition().duration(300).style("fill", COLOR_FILL);
       }, ANIMATION_TIME * timeInt++);
       setTimeout(function () {
+        t1 = textP.text();
+        t2 = textL.text();
         textP.transition().duration(300).text("");
         textL.transition().duration(300).text("");
       }, ANIMATION_TIME * timeInt++);
       setTimeout(function () {
-        textP.transition().duration(300).text(node.left.data);
-        textL.transition().duration(300).text(node.data);
+        textP.transition().duration(300).text(t2);
+        textL.transition().duration(300).text(t1);
       }, ANIMATION_TIME * timeInt++);
 
       setTimeout(function () {
@@ -648,7 +655,7 @@ function removeNodeAnimation(node, data, BST, nodeDelete, nodeMin) {
 
     var linkText = "#l" + parent.data + "-" + aux.data;
     var linkEdit = d3.select(linkText);
-
+    
     setTimeout(function () {
       textNode.transition().duration(300).text("");
       textNodeAux.transition().duration(300).text("");
@@ -667,7 +674,7 @@ function removeNodeAnimation(node, data, BST, nodeDelete, nodeMin) {
         .delay(300)
         .style("fill", STROKE_NORMAL);
       nodeAuxEdit.transition().duration(300).text("");
-      if (aux.right === null || isNaN(aux.right.data)) {
+      if (aux.right === null || isNaN(aux.right.data)) { // If the node has a child we cannot delete the link
         linkEdit.transition().duration(300).style("stroke", STROKE_NORMAL);
       }
     }, ANIMATION_TIME * timeInt++);
@@ -676,14 +683,14 @@ function removeNodeAnimation(node, data, BST, nodeDelete, nodeMin) {
     return node;
   }
 }
-
+/* FIND MIN VALUE IN A GIVEN SUBTREE */
 function findMinNodeAnimation(node) {
   if (node.left === null || isNaN(node.left.data)) {
     var nodeText = "#c" + node.data;
     var nodeEdit = d3.select(nodeText);
 
     setTimeout(function () {
-      nodeEdit.transition().duration(300).style("stroke", "red");
+      nodeEdit.transition().duration(300).style("stroke", STROKE_DELETE);
       nodeEdit.transition().duration(300).delay(350).style("fill", COLOR_FILL);
     }, ANIMATION_TIME * timeInt++);
     return node;
@@ -709,11 +716,12 @@ function getBackToNormal(node) {
         return STROKE_NORMAL;
       }
     });
-  d3.selectAll(".link").style("stroke", "black");
+  d3.selectAll(".link").style("stroke", COLOR_LINK);
 }
 /* -------------------------------------------------------------------------------- */
 
 /* ------------------------------- ANIMATE HANDLERS ------------------------------- */
+/* YOU CAN ANIMATE THE MOUSE OVER AND THE MOUSE OUT IF YOU WANT                     */
 const COLOR_MOUSE_OVER = "#000058";
 const COLOR_MOUSE_OUT = "rgb(55, 109, 179)";
 const FONT_SIZE_MOUSE_OVER = "20px";
@@ -761,7 +769,7 @@ var tree;
 var diagonal;
 var svg;
 function drawBST(div_class, newNode) {
-  newNode = newNode || 0;
+  newNode = newNode || 0; // if we insert a new node, we have to pass it as parameter to make it invisible, otherwise newNode is going to be equal to 0 and nothing happens
   var margin = {
       top: MARGIN_TOP,
       right: MARGIN_RIGHT,
